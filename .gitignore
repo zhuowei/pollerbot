@@ -1,0 +1,4 @@
+*.o
+pollerbot
+poller.db
+*.swiftmodule
