@@ -20,8 +20,8 @@ modulecache:
 $(TARGET): $(TARGET).o
 	clang++ $(LFLAGS) $@.o -o $@
 
-$(TARGET).o: main.swift
-	$(SWIFTC) $(SWIFTC_FLAGS) $< -o $@ -module-name $(subst .o,,$@) -emit-module-path $(subst .o,,$@).swiftmodule
+$(TARGET).o: main.swift credentials.swift
+	$(SWIFTC) $(SWIFTC_FLAGS) $< credentials.swift -o $@ -module-name $(subst .o,,$@) -emit-module-path $(subst .o,,$@).swiftmodule
 
 clean:
 	@rm *.o $(TARGET)

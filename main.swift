@@ -29,20 +29,21 @@ func pad(instr: String, padDigit: String, length: Int) -> String {
 }
 
 func urlForDate(date: NSDateComponents) -> String {
-	//return "http://www.girlgeniusonline.com/ggmain/strips/" + 
-	return "http://localhost:8000/" + 
-		"ggmain" + pad(String(date.year), padDigit: "0", length: 4) +
-			pad(String(date.month), padDigit: "0", length: 2) +
-			pad(String(date.day), padDigit: "0", length: 2) +
-			".jpg"
+	return "http://www.girlgeniusonline.com/ggmain/strips/" +
+	//return "http://localhost:8000/" +
+		"ggmain" + shortDate(date) + ".jpg"
 }
 
 func shortDate(date: NSDateComponents) -> String {
-	//return "http://www.girlgeniusonline.com/ggmain/strips/" + 
 	return pad(String(date.year), padDigit: "0", length: 4) +
 			pad(String(date.month), padDigit: "0", length: 2) +
 			pad(String(date.day), padDigit: "0", length: 2)
 }
+
+let displayDateFormatter = NSDateFormatter()
+displayDateFormatter.locale = NSLocale(localeIdentifier: "en_US")
+displayDateFormatter.dateStyle = .FullStyle
+displayDateFormatter.timeStyle = .NoStyle
 
 func alreadyPolled(sqlite: SQLite, url: String) throws -> (Bool) {
 	var yep = false
@@ -64,14 +65,20 @@ func urlEscape(url: String) -> String {
 		NSCharacterSet.URLHostAllowedCharacterSet())!
 }
 
+func genTropesPost(url: String, date: NSDate, components: NSDateComponents) -> String {
+	let dateReadable = displayDateFormatter.stringFromDate(date)
+	//let webpageUrl = "http://www.girlgeniusonline.com/comic.php?date=" + shortDate(components)
+	return "Comic for " + dateReadable + " is up.\n\n" //[[" + url + "|direct image link]] [[" + webpageUrl + "|website]]"
+}
+
+
 func postToTropes(message: String) {
 	curl.reset()
 	curl.setOption(CURLOPT_POST, int:1)
-	let postfields = "addressee=polar&subject=testsubject&pm_text="
+	let postfields = "discussion=0000000000000000000002oy&postedit="
 		+ urlEscape(message)
-	let cookies = "COOKIES"
-	//curl.url = "http://tvtropes.org/pmwiki/w_pmsend.php"
-	curl.url = "http://localhost:9000/"
+	let cookies = tvtropesCookies
+	curl.url = "http://tvtropes.org/pmwiki/forumaddpost.php"
 	postfields.withCString {
 		postfields_cs in
 		curl.setOption(CURLOPT_POSTFIELDS, v:UnsafeMutablePointer<Void>(postfields_cs))
@@ -104,14 +111,14 @@ func doPoll() throws {
 			continue
 		}
 		let (curlResult, httpResult) = doHead(url)
+		print(url, curlResult, httpResult)
 		if (curlResult != 0 || httpResult != 200) {
 			continue
 		}
 		print("Found a comic", url)
 		foundOne = true
-		// try addToDatabase(sqlite, url:url)
-		tropesPost += "[[" + url + "| Comic for " +
-			shortDate(components) + "]]\n"
+		try addToDatabase(sqlite, url:url)
+		tropesPost += genTropesPost(url, date: newdate, components: components)
 	}
 	if foundOne {
 		postToTropes(tropesPost)

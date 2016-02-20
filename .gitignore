@@ -2,3 +2,4 @@
 pollerbot
 poller.db
 *.swiftmodule
+credentials.swift
