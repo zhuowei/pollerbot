@@ -67,8 +67,9 @@ func urlEscape(url: String) -> String {
 
 func genTropesPost(url: String, date: NSDate, components: NSDateComponents) -> String {
 	let dateReadable = displayDateFormatter.stringFromDate(date)
-	//let webpageUrl = "http://www.girlgeniusonline.com/comic.php?date=" + shortDate(components)
-	return "Comic for " + dateReadable + " is up.\n\n" //[[" + url + "|direct image link]] [[" + webpageUrl + "|website]]"
+	let webpageUrl = "http://www.girlgeniusonline.com/comic.php?date=" + shortDate(components)
+	return "Comic for " + dateReadable + ": [[" + url + "?nocache=" + shortDate(components)
+		+ " sneaky gate]] [[" + webpageUrl + " permalink]]"
 }
 
 

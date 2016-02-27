@@ -10,7 +10,7 @@ SWIFTC_FLAGS = -frontend $(DEBUG) -c -module-cache-path $(MODULE_CACHE_PATH) -em
 MODULE_CACHE_PATH = /tmp/modulecache
 Linux_SHLIB_PATH = $(shell dirname $(shell dirname $(shell which swiftc)))/lib/swift/linux
 SHLIB_PATH = -L$($(OS)_SHLIB_PATH)
-LFLAGS = $(SHLIB_PATH) -g -luuid -lcurl -lswiftCore -lswiftGlibc -lFoundation $(PERFECTLIB_PATH)/PerfectLib.so -Xlinker -rpath -Xlinker $($(OS)_SHLIB_PATH)
+LFLAGS = $(SHLIB_PATH) -g -luuid -lcurl -lswiftCore -lswiftGlibc -lFoundation PerfectLib.so -Xlinker -rpath -Xlinker $($(OS)_SHLIB_PATH)
 
 all: modulecache $(TARGET)
 
